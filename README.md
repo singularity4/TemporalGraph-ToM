@@ -129,9 +129,9 @@ analyze_dataset_stats_v10.py
 ### Documentation
 
 ```
-docs/design.md                  story construction parameters and rationale
+docs/design.md                  story parameters and design
 docs/changelog.md               version history
-docs/why_llms_fail_trust_rule.md narrative on the trust-rule failure mode
+
 ```
 
 ## Reproducibility
