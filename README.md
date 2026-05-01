@@ -15,7 +15,7 @@ python higher_order_beliefs_v10.py       # Q0–Q3
 python counterfactual_beliefs_v10.py     # Q5–Q7, Q10
 python causal_beliefs_v10.py             # Q8
 python common_knowledge_v10.py           # Q9, Q11, Q13
-python verify_v10.py                     # line-by-line verifier
+python verify_v10.py                     # forward verifier
 python verify_graph_v10.py               # graph-based verifier (TBG)
 python score_v10.py predictions.jsonl    # grade model predictions
 python analyze_dataset_stats_v10.py      # dataset descriptive stats
@@ -23,13 +23,25 @@ python analyze_dataset_stats_v10.py      # dataset descriptive stats
 
 Stories are in `stories_v10.jsonl`. Both ground truth verifiers should report 0 mismatches.
 
+## Question categories and types
+
+The 12 questions group into four reasoning categories:
+
+- **Higher-order beliefs** (Q0, Q1, Q2, Q3) — what's true and what each
+  agent believes.
+- **Counterfactual beliefs** (Q5, Q6, Q7, Q10) — higher order counterfactual beliefs.
+- **Causal beliefs** (Q8) — backward attribution: which event caused this
+  agent's final belief.
+- **Common knowledge** (Q9, Q11, Q13) — whether the location is common
+  knowledge in a set of agents.
+
 ## File map
 
 ### Data
 
 ```
 stories_v10.jsonl
-  100 multi-agent stories, byte-stable for SEED=0.
+  100 multi-agent stories.
   → input to all question scripts and verifier scripts.
 
 higher_order_beliefs_v10.jsonl
@@ -43,12 +55,12 @@ counterfactual_beliefs_v10.jsonl
   ← stories_v10.jsonl, higher_order_beliefs_v10.jsonl
 
 causal_beliefs_v10.jsonl
-  Ground truth for Q8 (causal belief (belief inertia) — which event caused this agent's
+  Ground truth for Q8 (causal belief / belief inertia) — which event caused this agent's
   final belief).
   ← stories_v10.jsonl, higher_order_beliefs_v10.jsonl
 
 common_knowledge_v10.jsonl
-  Ground truth for Q9 (CK no perturbation), Q11 (CK with exit perturbation),
+  Ground truth for Q9 (CK without perturbation), Q11 (CK with exit perturbation),
   Q13 (CK with comm perturbation).
   ← stories_v10.jsonl, higher_order_beliefs_v10.jsonl
 ```
@@ -63,15 +75,15 @@ gen_v10.py
   → stories_v10.jsonl
 
 higher_order_beliefs_v10.py
-  Generates Q0–Q3 ground truth. Uses the line-by-line verifier to derive
+  Generates Q0–Q3 ground truth. Uses the forward verifier to derive
   the event timeline, then samples chains for Q2/Q3 from a question
   seed.
   ← stories_v10.jsonl  → higher_order_beliefs_v10.jsonl
 
 counterfactual_beliefs_v10.py
   Generates Q5/Q6/Q7/Q10 ground truth. For each perturbation type, attempts
-  a targeted search for configurations that actually change the answer;
-  falls back to random selection if none are found.
+  a targeted search for configurations that change the answer;
+  falls back to random selection.
   ← stories_v10.jsonl, higher_order_beliefs_v10.jsonl
   → counterfactual_beliefs_v10.jsonl
 
@@ -122,22 +134,6 @@ docs/changelog.md               version history
 docs/why_llms_fail_trust_rule.md narrative on the trust-rule failure mode
 ```
 
-## Question categories and types
-
-The 12 question types group into four reasoning categories:
-
-- **Higher-order beliefs** (Q0, Q1, Q2, Q3) — what's true and what each
-  agent / chain of agents believes.
-- **Counterfactual beliefs** (Q5, Q6, Q7, Q10) — beliefs under perturbations:
-  drop a move, swap a comm, flip a motive, swap exit times.
-- **Causal beliefs** (Q8) — backward attribution: which event caused this
-  agent's final belief.
-- **Common knowledge** (Q9, Q11, Q13) — whether the location is common
-  knowledge in a set, optionally under perturbation.
-
-(Q4 — search prediction — was a behavioral re-framing of Q1 and was dropped.
- Q12 was designed and dropped during development.)
-
 ## Reproducibility
 
 All scripts are deterministic. `gen_v10.py` uses a single seed (SEED=0) for
@@ -161,12 +157,12 @@ questions' answers. Per-question seed offsets:
 Each question's RNG is `random.Random(offset + story_id)`. Re-running with
 the same input produces byte-identical output.
 
-## Two verifiers
+## Two independent verifiers
 
-Ground truth is checked two ways:
+Ground truth is calculated in two ways:
 
 - `verify_v10.py` — line-by-line forward parser.
-- `verify_graph_v10.py` — builds an explicit per-(agent, time_step) belief
+- `verify_graph_v10.py` — builds an explicit per-(agent, time_step) temporal belief
   graph and propagates beliefs through it. This is the TBG reasoning scaffold.
 
 Both implementations apply the same witness and trust rules but use different computations. 
