@@ -5,6 +5,7 @@ propagation across multiple agents. 100 multi-agent stories, 12 question
 types per story across four reasoning categories. Distributed with the
 Temporal Belief Graph (TBG) reasoning scaffold. Extended abstract: [Evaluating Theory-of-Mind Reasoning with Temporal Belief Graphs](docs/Extended_Abstract_TGToM.pdf)
 
+![Belief Propagation in Temporal Graphs](docs/tbg_belief_propagation.jpeg)
 
 ## Quickstart
 
