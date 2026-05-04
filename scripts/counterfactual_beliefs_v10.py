@@ -24,11 +24,11 @@ read the indicated story line to recover it.
 
 ================================================================================
 INPUT (read-only):
-  /mnt/user-data/outputs/v10/stories_v10.jsonl
-  /mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/stories_v10.jsonl
+  /mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl
 
 OUTPUT:
-  /mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl
     one entry per story; fields: id, Q5..Q7 each with question text,
     answer, and full perturbation metadata (perturbed_line,
     original_*, counterfactual_*, chain, chain_depth, targeted, ...).
@@ -69,7 +69,7 @@ Q6 — HIGHER-ORDER COUNTERFACTUAL BELIEF  (change a comm)
   TARGETED selection: bounded random search (up to 100 attempts) for a
   (comm, alt_loc, chain) such that the chain's higher-order belief with
   the swap differs from the chain's belief on unmodified events. Q6 has
-  a low qualifying rate (~17/100 stories) because most chains are
+  a low qualifying rate (~14% of stories) because most chains are
   already determined by a later move event whose witnesses ⊇ chain set,
   so changing a comm's claim has no effect on the higher-order answer.
   When no qualifying config is found, fall back to random and mark
@@ -136,9 +136,9 @@ import sys
 sys.path.insert(0, "/mnt/user-data/outputs/v10")
 from verify_v10 import parse_and_recompute  # type: ignore
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
-OUT_PATH = "/mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
+OUT_PATH = "/mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl"
 
 # Per-(question, story) seed offsets — see DETERMINISM section above.
 Q5_SEED_OFFSET = 50000
