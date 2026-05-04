@@ -19,11 +19,11 @@ Reports:
 
 ================================================================================
 INPUT (read-only):
-  /mnt/user-data/outputs/v10/stories_v10.jsonl
-  /mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl
-  /mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl
-  /mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl
-  /mnt/user-data/outputs/v10/common_knowledge_v10.jsonl
+  /mnt/user-data/outputs/v11/data/stories_v10.jsonl
+  /mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl
 
 ================================================================================
 USAGE
@@ -39,11 +39,11 @@ from collections import Counter
 sys.path.insert(0, "/mnt/user-data/outputs/v10")
 from verify_v10 import parse_and_recompute  # type: ignore
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-HIGHER_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
-COUNTERFACTUAL_PATH = "/mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl"
-CAUSAL_PATH = "/mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl"
-KNOWLEDGE_PATH = "/mnt/user-data/outputs/v10/common_knowledge_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+HIGHER_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
+COUNTERFACTUAL_PATH = "/mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl"
+CAUSAL_PATH = "/mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl"
+KNOWLEDGE_PATH = "/mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl"
 
 
 def histogram(values):
