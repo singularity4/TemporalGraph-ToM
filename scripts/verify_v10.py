@@ -1,13 +1,13 @@
 """
 Forward verifier for TGToM ground truth — line-by-line trust/witness sweep.
 
-Re-parses each story and recomputes Q0..Q3 ground truth, asserting it
+Re-parses each story and recomputes Q0..Q3 ground truth, checking it
 matches higher_order_beliefs_v10.jsonl. Acts as a check on the question
-generator: parse_and_recompute walks the story text using the witness rule
+generator: parse_and_recompute goes through the story text using the witness rule
 and trust rule and produces a canonical event timeline; the recomputed
 Q0..Q3 values must equal those stored.
 
-Used together with verify_graph_v10.py (the TBG-style independent verifier)
+Used together with verify_graph_v10.py (the TBG independent verifier)
 to cross-check ground truth from two different reasoning paths.
 
 Belief propagation rule:
@@ -19,13 +19,13 @@ Witness rule:
   Hide-target does not witness their own hiding move.
   Help-target witnesses normally.
 
-Distractors are ignored.
+Distractors are always ignored.
 """
 import json
 import re
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
 
 
 def parse_and_recompute(story_text, obj, agents):
