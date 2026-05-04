@@ -3,11 +3,11 @@ Causal beliefs generator (Q8) — derives ground truth from TGToM stories.
 
 ================================================================================
 INPUT (read-only):
-  /mnt/user-data/outputs/v10/stories_v10.jsonl
-  /mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/stories_v10.jsonl
+  /mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl
 
 OUTPUT:
-  /mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl
     one entry per story with Q8: question text, answer, and metadata.
 
 ================================================================================
@@ -51,9 +51,9 @@ import sys
 sys.path.insert(0, "/mnt/user-data/outputs/v10")
 from verify_v10 import parse_and_recompute  # type: ignore
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
-OUT_PATH = "/mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
+OUT_PATH = "/mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl"
 
 # Per-(question, story) seed offsets — see DETERMINISM section above.
 Q8_SEED_OFFSET = 80000
