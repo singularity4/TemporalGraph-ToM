@@ -1,11 +1,11 @@
 """
-Higher-order beliefs generator (Q0–Q3) — derives ground truth from TGToM stories.
+Higher-order beliefs question generator (Q0–Q3) — derives ground truth from TGToM stories.
 
 ================================================================================
 SCRIPT DESCRIPTION
 ================================================================================
 Reads stories_v10.jsonl. For each story, re-parses the text to recover the
-event sequence, then produces ground truth and questions for the four core question types:
+event sequence, then produces ground truth and questions for the four question types:
 
   Q0  true location
   Q1  first-order beliefs (one question per agent)
@@ -14,11 +14,11 @@ event sequence, then produces ground truth and questions for the four core quest
 
 ================================================================================
 INPUT (read-only):
-  /mnt/user-data/outputs/v10/stories_v10.jsonl
+  /mnt/user-data/outputs/v11/data/stories_v10.jsonl
     Each line: {id, story, agents, object}.
 
 OUTPUT:
-  /mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl
     One entry per story. Per-entry fields:
       id, n_agents, agents, object, actual_location, comm_log,
       Q0  : {question, answer}
@@ -43,8 +43,8 @@ import sys
 sys.path.insert(0, "/mnt/user-data/outputs/v10")
 from verify_v10 import parse_and_recompute  # type: ignore
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-OUT_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+OUT_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
 
 
 def chain_belief_location(events, chain):
@@ -282,7 +282,6 @@ def main():
     print()
     print("--- Sample (id=0) ---")
     print(json.dumps(out[0], indent=2))
-
 
 if __name__ == "__main__":
     main()
