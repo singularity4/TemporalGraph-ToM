@@ -267,9 +267,9 @@ def generate_story(rng: random.Random, story_id: int):
             agents_in_room.discard(a)
 
     # ------------------------------------------------------------------
-    # STAGE 9: Story emission (in-room phase)
+    # STAGE 9: Story generation (in-room phase)
     # ------------------------------------------------------------------
-    # Walk the event_timeline and emit one line per action.
+    # Walk the event_timeline and generate one line per action.
     #   location: current location of the object.
     #   agents_in_room:  agents still present (used for motive-target candidates).
     #   events:   minimal ledger of {kind, location} for moves and the
