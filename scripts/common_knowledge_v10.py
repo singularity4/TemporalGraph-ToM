@@ -1,5 +1,5 @@
 """
-Common knowledge generator (Q9, Q11, Q13) — derives ground truth from TGToM stories.
+Common knowledge question generator (Q9, Q11, Q13) — derives ground truth from TGToM stories.
 
   Q9  — common knowledge over an agent set (no perturbation)
         "Is the location of the <object> common knowledge among {Y, Z, W}?"
