@@ -1,10 +1,10 @@
 """
-TBG-based verifier — independent cross-check on TGToM ground truth.
+TBG verifier — independent graph-based verifier for ground truth.
 
 Builds an explicit Temporal Belief Graph (TBG) from each story:
 
   Nodes:  (agent, time_step) pairs, each holding that agent's belief about
-          the object's location at that step.
+          the object's location at that timestep.
   Links:  - Default link: (agent, t) -> (agent, t+1) with unchanged belief.
           - Witness update: if event at step t is a placement or move with
             agent in witnesses, (agent, t+1).belief = event.location.
@@ -19,7 +19,7 @@ are agent beliefs after each event; communication links and intent links determi
 how beliefs propagate; observations are direct node-state updates (no links).
 
 This is a structurally different computation from verify_v10.py, which does
-a single forward sweep over the text. They should agree on the ground truth.
+a single forward pass over the text. They should agree on the ground truth.
 
 Belief propagation trust rule (same as verify_v10.py):
   Listener trusts speaker iff speaker exited the room later than the listener.
@@ -28,8 +28,8 @@ Belief propagation trust rule (same as verify_v10.py):
 import json
 import re
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
 
 
 # --------------------------------------------------------------------------
@@ -575,9 +575,9 @@ def check_q11_q13(knowledge_entry, events, exit_step, agents):
 def main():
     stories = [json.loads(l) for l in open(STORIES_PATH)]
     higher_qa = [json.loads(l) for l in open(CORE_QUESTIONS_PATH)]
-    counterfactual_qa = [json.loads(l) for l in open("/mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl")]
-    causal_qa = [json.loads(l) for l in open("/mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl")]
-    knowledge_qa = [json.loads(l) for l in open("/mnt/user-data/outputs/v10/common_knowledge_v10.jsonl")]
+    counterfactual_qa = [json.loads(l) for l in open("/mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl")]
+    causal_qa = [json.loads(l) for l in open("/mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl")]
+    knowledge_qa = [json.loads(l) for l in open("/mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl")]
 
     n_stories_with_mismatch = 0
     counts_per_question = {}
