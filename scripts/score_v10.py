@@ -1,5 +1,5 @@
 """
-Scorer — grade model predictions against TGToM ground truth.
+Scorer — score model predictions against TGToM ground truth.
 
 ================================================================================
 SCRIPT DESCRIPTION
@@ -31,10 +31,10 @@ mean-over-trials accuracy.
 INPUT
 ================================================================================
 - TGToM ground truth files:
-    /mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl
-    /mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl
-    /mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl
-    /mnt/user-data/outputs/v10/common_knowledge_v10.jsonl
+    /mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl
+    /mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl
+    /mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl
+    /mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl
 
 - Predictions file (passed as argument): JSONL with entries of shape
     {
@@ -81,10 +81,10 @@ from collections import defaultdict
 
 
 GROUND_TRUTH_PATHS = {
-    "higher": "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl",
-    "counterfactual": "/mnt/user-data/outputs/v10/counterfactual_beliefs_v10.jsonl",
-    "causal": "/mnt/user-data/outputs/v10/causal_beliefs_v10.jsonl",
-    "knowledge": "/mnt/user-data/outputs/v10/common_knowledge_v10.jsonl",
+    "higher": "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl",
+    "counterfactual": "/mnt/user-data/outputs/v11/data/counterfactual_beliefs_v10.jsonl",
+    "causal": "/mnt/user-data/outputs/v11/data/causal_beliefs_v10.jsonl",
+    "knowledge": "/mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl",
 }
 
 # Maps question_id -> (file_key, dict_key_in_entry).
@@ -338,7 +338,6 @@ def main():
                        expected_trials=args.trials,
                        group_by_targeted=args.by_targeted,
                        group_by_chain_depth=args.by_chain_depth)
-
 
 if __name__ == "__main__":
     main()
