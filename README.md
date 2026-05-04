@@ -1,9 +1,9 @@
 # TemporalGraph-ToM (TGToM)
 
 A benchmark for higher-order theory-of-mind reasoning with temporal belief
-propagation across multiple agents. 100 multi-agent stories, 12 question
+propagation across multiple agents. 1k multi-agent stories, 12 question
 types per story across four reasoning categories. Includes the
-Temporal Belief Graph (TBG) framework. Extended abstract: [Evaluating Theory-of-Mind Reasoning with Temporal Belief Graphs](docs/Extended_Abstract_TGToM.pdf)
+Temporal Belief Graph (TBG) framework. Extended abstract: [Evaluating Theory-of-Mind Reasoning with Temporal Belief Graphs](docs/Extended_Abstract_TGToM.pdf) TBG outperforms CoT in preliminary tests.
 
 ![Belief Propagation in Temporal Graphs](docs/tbg_belief_propagation.jpeg)
 
@@ -41,7 +41,7 @@ The 12 questions group into four reasoning categories:
 
 ```
 stories_v10.jsonl
-  100 multi-agent stories.
+  1k multi-agent stories.
   → input to all question scripts and verifier scripts.
 
 higher_order_beliefs_v10.jsonl
@@ -167,4 +167,4 @@ Ground truth is calculated in two ways:
 
 Both implementations apply the same witness and trust rules but use different computations. 
 They should agree on the ground truth; disagreement flags a bug. 
-Both currently report 0/100 mismatches across all 12 questions.
+Both currently report 0 mismatches across all 12 questions.
