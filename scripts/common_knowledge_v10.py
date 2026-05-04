@@ -20,11 +20,11 @@ common-knowledge definition (below).
 
 ================================================================================
 INPUT (read-only):
-  /mnt/user-data/outputs/v10/stories_v10.jsonl
-  /mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl
+  /mnt/user-data/outputs/v11/data/stories_v10.jsonl
+  /mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl
 
 OUTPUT:
-  /mnt/user-data/outputs/v10/common_knowledge_v10.jsonl
+  /mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl
     one entry per story with Q9, Q11 and Q13.
 
 ================================================================================
@@ -86,9 +86,9 @@ import sys
 sys.path.insert(0, "/mnt/user-data/outputs/v10")
 from verify_v10 import parse_and_recompute  # type: ignore
 
-STORIES_PATH = "/mnt/user-data/outputs/v10/stories_v10.jsonl"
-CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v10/higher_order_beliefs_v10.jsonl"
-OUT_PATH = "/mnt/user-data/outputs/v10/common_knowledge_v10.jsonl"
+STORIES_PATH = "/mnt/user-data/outputs/v11/data/stories_v10.jsonl"
+CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.jsonl"
+OUT_PATH = "/mnt/user-data/outputs/v11/data/common_knowledge_v10.jsonl"
 
 # Per-(question, story) seed offsets — see DETERMINISM section above.
 Q9_SEED_OFFSET = 90000
@@ -494,8 +494,9 @@ def main():
                        and o["Q13"].get("targeted"))
     q13_yes = sum(1 for o in out if o["Q13"]["answer"]
                   and o["Q13"]["answer"]["common_knowledge"])
-    print(f"\nQ11: yes={q11_yes}/100, targeted={q11_targeted}/100")
-    print(f"Q13: yes={q13_yes}/100, targeted={q13_targeted}/100")
+    n = len(out)
+    print(f"\nQ11: yes={q11_yes}/{n}, targeted={q11_targeted}/{n}")
+    print(f"Q13: yes={q13_yes}/{n}, targeted={q13_targeted}/{n}")
 
 
 if __name__ == "__main__":
