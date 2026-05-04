@@ -456,8 +456,8 @@ def generate_story(rng: random.Random, story_id: int):
     }
 
 
-def main(n=100,
-         stories_out="/mnt/user-data/outputs/v10/stories_v10.jsonl"):
+def main(n=1000,
+         stories_out="/mnt/user-data/outputs/v11/data/stories_v10.jsonl"):
     """
     Generate n stories. Writes only stories — no ground truth.
 
