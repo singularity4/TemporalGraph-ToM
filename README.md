@@ -19,7 +19,7 @@ python verify_v10.py                     # forward verifier
 python verify_graph_v10.py               # graph-based verifier (TBG)
 python score_v10.py predictions.jsonl    # grade model predictions
 python analyze_dataset_stats_v10.py      # dataset descriptive stats
-python tbg_scorer_v10.py --self-test     # TBG graph prediction scorer
+python tbg_scorer_v10.py --self-test     # TBG prediction scorer
 ```
 
 Stories are in `stories_v10.jsonl`. Both ground truth verifiers should report 0 mismatches.
