@@ -5,8 +5,6 @@ propagation across multiple agents. 1k multi-agent stories, 12 question
 types per story across four reasoning categories. Includes the
 Temporal Belief Graph (TBG) framework. Extended abstract: [Evaluating Theory-of-Mind Reasoning with Temporal Belief Graphs](docs/Extended_Abstract_TGToM.pdf) TBG improves temporal belief tracking and mitigates reality bias, outperforming CoT in preliminary tests.
 
-#![Belief Propagation in Temporal Graphs](docs/tbg_belief_propagation.jpeg)
-
 ## Quickstart
 
 ```bash
