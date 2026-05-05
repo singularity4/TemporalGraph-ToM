@@ -127,7 +127,7 @@ analyze_dataset_stats_v10.py
   ← all data files
 
 tbg_scorer_v10.py
-  Scores model-predicted Temporal Belief Graphs (TBG) against ground truth.
+  Scores predicted Temporal Belief Graphs (TBG) against ground truth.
   Reports four graph metrics: Final Node Accuracy, Time-Respecting Node Accuracy,
   Edge F1 (Temporal and Static), Normalized Structural Distance.
   ← predictions.jsonl, stories_v10.jsonl
