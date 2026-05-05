@@ -3,7 +3,7 @@
 A benchmark for higher-order theory-of-mind reasoning with temporal belief
 propagation across multiple agents. 1k multi-agent stories, 12 question
 types per story across four reasoning categories. Includes the
-Temporal Belief Graph (TBG) framework. Extended abstract: [Evaluating Theory-of-Mind Reasoning with Temporal Belief Graphs](docs/Extended_Abstract_TGToM.pdf) TBG outperforms CoT in preliminary tests.
+Temporal Belief Graph (TBG) framework. Extended abstract: [Evaluating Theory-of-Mind Reasoning with Temporal Belief Graphs](docs/Extended_Abstract_TGToM.pdf) In preliminary tests, TBG outperforms CoT.
 
 ![Belief Propagation in Temporal Graphs](docs/tbg_belief_propagation.jpeg)
 
