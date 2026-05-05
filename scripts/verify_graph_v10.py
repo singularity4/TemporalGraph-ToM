@@ -12,7 +12,7 @@ Builds an explicit Temporal Belief Graph (TBG) from each story:
             speaker exited later than the listener, (listener, t+1).belief =
             claimed_location.
 
-Final beliefs are read off as (agent, T_final).belief.
+Final beliefs are (agent, T_final).belief.
 
 This implements the TBG reasoning scaffold described in the abstract: nodes
 are agent beliefs after each event; communication links and intent links determine
@@ -38,13 +38,13 @@ CORE_QUESTIONS_PATH = "/mnt/user-data/outputs/v11/data/higher_order_beliefs_v10.
 
 def parse_events(story_text, obj, agents):
     """
-    Walk the story text and return:
+    Parse the story text and return:
       events:    ordered list of {kind, location, ..., line_index}
                  kind ∈ {place, move, comm}
       exit_step: dict {agent: line_index} of when each agent exited
                  (sentinel 10**9 for agents who never explicitly exit)
 
-    Belief computation happens in build_graph().
+    Belief computation is in build_graph().
     """
     events = []
     exit_step = {a: 10**9 for a in agents}
@@ -85,7 +85,7 @@ def parse_events(story_text, obj, agents):
             })
             continue
 
-        # Move (with optional motive clause)
+        # Move (with optional intention)
         m_move = re.match(rf"^(\S+) moved the {re.escape(obj)} to the (.+)\.$", text)
         if m_move:
             mover = m_move.group(1)
@@ -153,7 +153,7 @@ def parse_events(story_text, obj, agents):
             exit_step[agent] = line_index
             continue
 
-        # Public comm
+        # Public communication
         m_pub = re.match(rf"^(\S+) publicly claimed that the {re.escape(obj)} is in the (\S+)\.$", text)
         if m_pub:
             speaker = m_pub.group(1)
@@ -168,7 +168,7 @@ def parse_events(story_text, obj, agents):
             })
             continue
 
-        # Private comm
+        # Private communication
         m_priv = re.match(rf"^(\S+) privately told (\S+) that the {re.escape(obj)} is in the (\S+)\.$", text)
         if m_priv:
             speaker = m_priv.group(1)
@@ -184,7 +184,7 @@ def parse_events(story_text, obj, agents):
             })
             continue
 
-        # Otherwise: distractor, ignored.
+        # Otherwise: distractor (ignored).
 
     return events, exit_step
 
@@ -195,46 +195,106 @@ def parse_events(story_text, obj, agents):
 
 def build_graph(events, exit_step, agents):
     """
-    Build the temporal belief graph. Returns belief[t][agent] for t in
-    {0, 1, ..., len(events)}, where belief[t] is the state AFTER applying
-    the t-th event (belief[0] is the empty initial state).
+    Build the temporal belief graph (TBG). Returns (belief, edges).
+
+    `belief[t][agent]` is the agent's belief after applying the t-th event,
+    for t in {0, 1, ..., len(events)}. `belief[0]` is the empty initial
+    state.
+
+    `edges` is a list of inter-agent directed links produced by events,
+    each as a dict:
+      {
+        "source_agent": str,
+        "target_agent": str,
+        "line": int,             # story line number where link is formed
+        "relation_type": one of {"trusted", "untrusted",
+                                  "cooperative", "deceptive"},
+      }
 
     Graph propagation rules:
       - Default link: belief[t+1][agent] starts as belief[t][agent].
-      - For a place or move event with witnesses W and location L:
-          for w in W: belief[t+1][w] = L
-      - For a comm event with speaker S and listeners L:
+      - Place or move event with witnesses W and location L (observation;
+        no link): for w in W, belief[t+1][w] = L.
+      - Move event with help_target H produces a cooperative link
+        mover -> H (inert; doesn't propagate belief).
+      - Move event with hide_target D produces a deceptive link
+        mover -> D (suppresses observation update for D — D is excluded
+        from W above).
+      - Comm event with speaker S and listeners L:
           for ell in L:
             if exit_step[S] > exit_step[ell]:  (trust rule)
+              produce a trusted edge S -> ell;
               belief[t+1][ell] = claimed_location
+            else:
+              produce an untrusted edge S -> ell;
+              (belief unchanged)
     """
     T = len(events)
     belief = [{a: None for a in agents}]  # belief[0]: empty initial state
+    edges = []
 
     for t, event in enumerate(events):
         new_state = dict(belief[t])  # carry forward by default
+        line = event.get("line_index", t)
 
-        if event["kind"] in ("place", "move"):
+        if event["kind"] == "place":
             for witness in event["witnesses"]:
                 new_state[witness] = event["location"]
+
+        elif event["kind"] == "move":
+            mover = event.get("mover")
+            help_target = event.get("help_target")
+            hide_target = event.get("hide_target")
+            if help_target is not None and mover is not None:
+                edges.append({
+                    "source_agent": mover,
+                    "target_agent": help_target,
+                    "line": line,
+                    "relation_type": "cooperative",
+                })
+            if hide_target is not None and mover is not None:
+                edges.append({
+                    "source_agent": mover,
+                    "target_agent": hide_target,
+                    "line": line,
+                    "relation_type": "deceptive",
+                })
+            for witness in event["witnesses"]:
+                new_state[witness] = event["location"]
+
         elif event["kind"] == "comm":
             speaker = event["speaker"]
             speaker_step = exit_step.get(speaker, 10**9)
             for listener in event["listeners"]:
+                if listener == speaker:
+                    continue
                 listener_step = exit_step.get(listener, 10**9)
                 if speaker_step > listener_step:
+                    edges.append({
+                        "source_agent": speaker,
+                        "target_agent": listener,
+                        "line": line,
+                        "relation_type": "trusted",
+                    })
                     new_state[listener] = event["claimed_location"]
+                else:
+                    edges.append({
+                        "source_agent": speaker,
+                        "target_agent": listener,
+                        "line": line,
+                        "relation_type": "untrusted",
+                    })
 
         belief.append(new_state)
 
-    return belief
+    return belief, edges
 
 
 def witnesses_for_event(event, exit_step):
     """
     Return the effective 'witnesses' set for an event (= agents whose
-    belief is updated by it). For place/move this is event['witnesses'].
-    For comm this is the subset of listeners who applied the trust rule.
+    belief is updated by it). For location/move this is event['witnesses'].
+    For communication this is the subset of listeners who applied the trust rule.
     Used for higher-order chain questions (Q2, etc.).
     """
     if event["kind"] in ("place", "move"):
@@ -255,12 +315,12 @@ def witnesses_for_event(event, exit_step):
 
 def reparse_events_with_modified_exits(events, exit_step_overrides, agents):
     """
-    Re-derive event witness sets when one or more agents' exit_step is
-    overridden. Used for Q10 (exit-swap) and Q11 (exit-change).
+    Re-derive event witness sets when one or more agents' exit_step is modified.
+    Used for Q10 (swap) and Q11 (change).
 
     The witness set of a place/move event is determined by who is in the
     room at that line. With modified exit_steps, an agent A is in the
-    room at line L iff their (possibly overridden) exit_step > L.
+    room at line L iff their (possibly modified) exit_step > L.
 
     Returns: (modified_events, new_exit_step) where modified_events have
     updated `witnesses` for place/move and the same comm fields (the
@@ -387,7 +447,7 @@ def check_q5_q7(cf_entry, events, exit_step, belief, agents):
     q5 = cf_entry["Q5"]
     drop_line = q5["perturbed_line"]
     events_q5 = [e for e in events if e["line_index"] != drop_line]
-    belief_q5 = build_graph(events_q5, exit_step, agents)
+    belief_q5, _ = build_graph(events_q5, exit_step, agents)
     asked_q5 = q5["asked_about"]
     graph_q5 = belief_q5[-1].get(asked_q5)
     if graph_q5 != q5["answer"]:
@@ -520,7 +580,7 @@ def check_q11_q13(knowledge_entry, events, exit_step, agents):
     new_exit_step[perturbed_agent] = new_exit_value
     modified_events, _ = reparse_events_with_modified_exits(events, new_exit_step, agents)
 
-    belief_q11 = build_graph(modified_events, new_exit_step, agents)
+    belief_q11, _ = build_graph(modified_events, new_exit_step, agents)
     final_q11 = belief_q11[-1]
     agent_set_q11 = set(q11["agent_set_S"])
     beliefs_q11 = {final_q11.get(a) for a in agent_set_q11}
@@ -549,7 +609,7 @@ def check_q11_q13(knowledge_entry, events, exit_step, agents):
                 modified_events_q13.append(new_event)
             else:
                 modified_events_q13.append(event)
-        belief_q13 = build_graph(modified_events_q13, exit_step, agents)
+        belief_q13, _ = build_graph(modified_events_q13, exit_step, agents)
         final_q13 = belief_q13[-1]
         agent_set_q13 = set(q13["agent_set_S"])
         beliefs_q13 = {final_q13.get(a) for a in agent_set_q13}
@@ -588,7 +648,7 @@ def main():
         events, exit_step = parse_events(
             story["story"], story["object"], story["agents"]
         )
-        belief = build_graph(events, exit_step, story["agents"])
+        belief, _ = build_graph(events, exit_step, story["agents"])
 
         problems = []
         problems += check_q0_q3(higher_entry, events, exit_step, belief, story["agents"])
