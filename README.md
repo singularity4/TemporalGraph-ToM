@@ -70,7 +70,7 @@ common_knowledge_v10.jsonl
 
 ```
 gen_v10.py
-  Story generator. Samples 100 stories from a fixed seed (SEED=0). Each
+  Story generator. Samples 1k stories from a fixed seed (SEED=0). Each
   story has 6–8 agents, a single tracked object, placement / move /
   communication / exit events.
   → stories_v10.jsonl
