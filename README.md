@@ -19,6 +19,7 @@ python verify_v10.py                     # forward verifier
 python verify_graph_v10.py               # graph-based verifier (TBG)
 python score_v10.py predictions.jsonl    # grade model predictions
 python analyze_dataset_stats_v10.py      # dataset descriptive stats
+python tbg_scorer_v10.py --self-test     # TBG graph reconstruction scorer
 ```
 
 Stories are in `stories_v10.jsonl`. Both ground truth verifiers should report 0 mismatches.
@@ -124,6 +125,12 @@ analyze_dataset_stats_v10.py
   container counts, event-type distributions, intent distributions, per-
   question targeted rates, per-question chain-depth distributions, etc.
   ← all data files
+
+tbg_scorer_v10.py
+  Scores model-predicted Temporal Belief Graphs (TBG) against ground truth.
+  Reports four graph metrics: Final Node Accuracy, Time-Respecting Node Accuracy,
+  Edge F1 (Temporal and Static), Normalized Structural Distance.
+  ← predictions.jsonl, stories_v10.jsonl
 ```
 
 ### Documentation
