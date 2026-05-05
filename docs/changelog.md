@@ -5,27 +5,25 @@ The evolution of the relevant benchmark code edits (internally tagged v10).
 ## v8
 
 New: verify_graph_v8.py — a TBG verifier that builds an explicit
-temporal belief graph (per-agent state at each time step, propagated
-forward by witnessing and trust rules) and reads off ground truth from
+temporal belief graph (agent node state at each time step, propagated
+forward by witnessing and trust rules) and reads ground truth from
 the final state. Independent of `parse_and_recompute`. Both verifiers
-must agree for ground truth to be considered correct.
+independently agree for ground truth.
 
 
 ## v9
 Question file reorganization. The five v8 question scripts are reorganized
 into four files grouped by reasoning type:
 
-- `higher_order_beliefs_v9.py` — Q0, Q1, Q2, Q3 (was `core_questions_v8.py`)
-- `counterfactual_beliefs_v9.py` — Q5, Q6, Q7, Q10 (Q10 moved in from
-  `q10_v8.py`)
-- `causal_beliefs_v9.py` — Q8 (was `extra_questions_v8.py`; Q9 moved out)
-- `common_knowledge_v9.py` — Q9, Q11, Q13 (Q9 moved in from
-  `extra_questions_v8.py`; was `knowledge_questions_v8.py`)
+- `higher_order_beliefs_v9.py` — Q0, Q1, Q2, Q3
+- `counterfactual_beliefs_v9.py` — Q5, Q6, Q7, Q10
+- `causal_beliefs_v9.py` — Q8
+- `common_knowledge_v9.py` — Q9, Q11, Q13
 
-Story-generation logic is unchanged (stories are byte-identical to v8). 
+Story generation logic is unchanged (all stories are byte-identical to v8). 
 
 Both verifiers (`verify_v9.py` and `verify_graph_v9.py`) updated to read
-from the new file structure and pass 100/100 across all 12 questions.
+from the new file and pass 100% across all 12 questions.
 
 ## v0.1 (internal tag v10)
 
@@ -34,8 +32,7 @@ Public release-ready version.
 Naming and framing:
 - Benchmark name standardized: **TemporalGraph-ToM (TGToM)**
 - Reasoning scaffold name standardized: **Temporal Belief Graph (TBG)**
-- Internal names replaced everywhere in code, docstrings, comments,
-  README, and docs.
+- Internal names replaced everywhere in code README, and docs.
 
 Coverage bug fixes (caught by `analyze_dataset_stats_v10.py`):
 
@@ -66,12 +63,11 @@ Documentation:
 New script:
 - `analyze_dataset_stats_v10.py` reports descriptive statistics over
   stories and ground truth: agent counts, container counts, event
-  distribution, intent distribution, trust distribution, per-question
-  targeted rates, chain-depth distributions, yes-rates for counterfactual questions,
-  and null-answer rates.
+  distribution, intent distribution, trust distribution, targeted rates for each question,
+  chain-depth distributions, rates for counterfactual questions, and null-answer rates.
 
 Code organization:
-- `counterfactual_beliefs_v10.py` extracted four small helpers used
+- `counterfactual_beliefs_v10.py` extracted 4 small helpers used
   across Q5/Q6/Q7/Q10: `build_chain_phrase`,
   `find_speaker_comm_occurrence`, `replace_comm_claim`,
   `counterfactual_motive_witnesses`.
@@ -99,8 +95,7 @@ Scaled benchmark from 100 to 1k stories:
 - Communication events produce trusted or untrusted edges for each listener 
   agent using the trust rule. Move events produce cooperative or deceptive edges
   (help and hide targets). Observation updates are self-updates
-  (node-state changes), not links, following the TBG formalism in the
-  paper abstract.
+  (node-state changes, not links), following the TBG framework.
 - The four internal callers in `verify_graph_v10.main` were updated to
   unpack the tuple as `belief, _ = build_graph(...)`. No other changes
   to the verifier.
@@ -124,4 +119,4 @@ Stylistic:
 - `design.md` updated from "~36/100" to "~36%".
 - README updated from "Samples 100 stories" to "Samples 1k stories"
   and includes the `tbg_scorer_v10.py` entry.
-
+  
