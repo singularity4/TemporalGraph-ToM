@@ -1,8 +1,8 @@
 # Changelog
 
-This file tracks the evolution of the relevant benchmark code edits (internally tagged v10).
+The evolution of the relevant benchmark code edits (internally tagged v10).
 
-##v8
+## v8
 
 New: verify_graph_v8.py — a TBG verifier that builds an explicit
 temporal belief graph (per-agent state at each time step, propagated
@@ -27,7 +27,7 @@ Story-generation logic is unchanged (stories are byte-identical to v8).
 Both verifiers (`verify_v9.py` and `verify_graph_v9.py`) updated to read
 from the new file structure and pass 100/100 across all 12 questions.
 
-## v0.1 (current; internal tag v10)
+## v0.1 (internal tag v10)
 
 Public release-ready version.
 
@@ -77,3 +77,51 @@ Code organization:
   `counterfactual_motive_witnesses`.
 - Q5 deduplicated: targeted and fallback share entry-building.
 - All output JSONLs byte-identical before and after the refactor.
+
+## v0.2 (current)
+
+Scaling and TBG evaluation.
+
+Scaled benchmark from 100 to 1k stories:
+- `gen_v10.py` default `n` changed from 100 to 1k.
+- First 100 stories byte-identical to v0.1 (per-(question, story)
+  seeding means each answer for story i depends only on i).
+- Both verifiers pass 1000/1000.
+- 1 null Q3 answer and 1 null Q7 answer at story 742 — a structurally
+  degenerate case (only 1 move with 2 witnesses, can't form a belief chain
+  of any required depth).
+
+`verify_graph_v10.py` extended to track edges:
+- `build_graph` now returns `(belief, edges)`. The new `edges` is a list
+  of directed links between agents produced by events, each as
+  `{source_agent, target_agent, line, relation_type}`, with
+  `relation_type` in {trusted, untrusted, cooperative, deceptive}.
+- Communication events produce trusted or untrusted edges for each listener 
+  agent using the trust rule. Move events produce cooperative or deceptive edges
+  (help and hide targets). Observation updates are self-updates
+  (node-state changes), not links, following the TBG formalism in the
+  paper abstract.
+- The four internal callers in `verify_graph_v10.main` were updated to
+  unpack the tuple as `belief, _ = build_graph(...)`. No other changes
+  to the verifier.
+
+New script: `tbg_scorer_v10.py`
+- Scores model-predicted temporal belief graphs against the ground truth
+  TBG for each story.
+- Reports four graph metrics introduced in the paper abstract:
+  Final Node Accuracy (FNA), Time-Respecting Node Accuracy (TNA;
+  full belief trajectory), Edge F1 (Temporal and Static), and Normalized 
+  Structural Distance (NSD). The Exact TBG Reconstruction Rate (fraction 
+  of stories with NSD = 0) is also reported as an aggregate.
+- Includes a `--self-test` flag that runs five synthetic test TBG cases
+  (perfect predictions, empty predictions, edge subset, line shifts,
+  relation-type corruption) to verify graph metrics.
+
+Stylistic:
+- `common_knowledge_v10.py` no longer hardcodes "/100" in its print
+  output; uses `len(out)`.
+- Q6 docstring updated from "~17/100 stories" to "~14% of stories".
+- `design.md` updated from "~36/100" to "~36%".
+- README updated from "Samples 100 stories" to "Samples 1k stories"
+  and includes the `tbg_scorer_v10.py` entry.
+
