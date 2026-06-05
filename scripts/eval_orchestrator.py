@@ -4,13 +4,13 @@ eval_orchestrator.py — TGToM evaluation orchestrator.
 ================================================================================
 SCRIPT DESCRIPTION
 ================================================================================
-Orchestrates evaluation for the TemporalGraph-ToM benchmark. For
+Orchestrates LLM evaluation for the TemporalGraph-ToM benchmark. For
 each (story, question, scaffold, model, trial), this script builds a prompt,
 submits it to the LLM API (via OpenRouter for unified access across providers),
 parses the response, and writes a predictions JSONL.
 
-It does not implement scoring or ground truth derivation — those live in `score_v10.py` 
-and `tbg_scorer_v10.py`, which consume the predictions file produced here.
+It does not implement scoring or groundmtruth derivation — those live in `score_v10.py` 
+and `tbg_scorer_v10.py`.
 
 Pipeline:
     Stage 1 (existing):  ground truth from gen_v10.py + question scripts
@@ -196,10 +196,12 @@ def questions_for_story(story_id, ground_truth):
     for question_id, gt_key in QUESTION_FILE.items():
         entry = ground_truth[gt_key][story_id]
         if question_id == "Q1":
-            # Q1 has multiple sub-questions, one per agent.
-            for sub_idx, sub in enumerate(entry["Q1"]["questions"]):
+            # Q1 has multiple sub-questions, one per agent. Keep question_id
+            # as "Q1" (scorer expects this) and attach the agent name.
+            for sub in entry["Q1"]["questions"]:
                 out.append({
-                    "question_id": f"Q1_{sub_idx}",
+                    "question_id": "Q1",
+                    "agent": sub["agent"],
                     "question_text": sub["question"],
                 })
         else:
@@ -208,6 +210,7 @@ def questions_for_story(story_id, ground_truth):
             if text is not None:
                 out.append({
                     "question_id": question_id,
+                    "agent": None,
                     "question_text": text,
                 })
     return out
@@ -326,6 +329,7 @@ def build_jobs(stories, ground_truth, n_stories, models, scaffolds, trials):
                         yield {
                             "story_id": story["id"],
                             "question_id": q["question_id"],
+                            "agent": q.get("agent"),
                             "scaffold": scaffold,
                             "model": model,
                             "trial": trial,
@@ -334,10 +338,15 @@ def build_jobs(stories, ground_truth, n_stories, models, scaffolds, trials):
 
 
 def run_job(client, job):
-    """Submit one job; return job dict with raw_response and parsed prediction."""
+    """Submit one job; return job dict with raw_response, parsed prediction,
+    and a top-level `prediction` field in the format score_v10.py expects."""
     raw = call_api(client, job["model"], job["prompt"])
     job["raw_response"] = raw
     job["parsed"] = parse_response(job["scaffold"], raw)
+    # score_v10.py reads `prediction_entry["prediction"]`; for all questions
+    # except those needing structured output (Q3/Q7 intent, Q8 line,
+    # Q9/Q11/Q13 ck dict), the answer string is the prediction.
+    job["prediction"] = job["parsed"].get("answer")
     return job
 
 
