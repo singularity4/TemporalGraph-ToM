@@ -1,9 +1,9 @@
 # TemporalGraph-ToM (TGToM)
 
-A benchmark for higher-order theory-of-mind reasoning with temporal belief
+A benchmark for higher-order theory-of-mind reasoning with temporal causal belief
 propagation across multiple agents. 1k multi-agent stories, 12 question
 types per story across four reasoning categories. Includes the
-Temporal Causal Belief Graph (TCBG) framework. TBG improves temporal belief tracking and mitigates reality bias, outperforming CoT in preliminary tests.
+Temporal Causal Belief Graph (TCBG) framework. 
 
 ##
 ![Belief propagation in temporal graphs](docs/tbg_belief_propagation.jpeg)
